@@ -10,7 +10,7 @@ PORT = int(os.getenv("APP_PORT", 4000))
 def home():
     if ENVIRONMENT == "live":
         return "Welcome to Live"
-    return "Welcome to dev-auto deployed"
+    return "Welcome to Dev-auto Deployed"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT)
