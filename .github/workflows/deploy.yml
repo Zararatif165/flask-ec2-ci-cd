@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.11
+          python-version: 3.9
 
       - name: Install dependencies
         run: pip install -r requirements.txt
@@ -28,16 +28,18 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
+          key: ${{ secrets.EC2_KEY1 }}
           port: 22
           script: |
             cd ~/flask-app
             git pull origin ${{ github.ref_name }}
             if [ "${{ github.ref_name }}" == "dev" ]; then
               pkill -f "app.py" || true
-              APP_ENV=dev APP_PORT=4000 nohup python3 app.py &
+              APP_ENV=dev APP_PORT=4000 nohup /usr/bin/python3 app.py > dev.log 2>&1 &
+              disown
             fi
             if [ "${{ github.ref_name }}" == "main" ]; then
               pkill -f "app.py" || true
-              APP_ENV=live APP_PORT=5000 nohup python3 app.py &
+              APP_ENV=live APP_PORT=5000 nohup /usr/bin/python3 app.py > live.log 2>&1 &
+              disown
             fi
