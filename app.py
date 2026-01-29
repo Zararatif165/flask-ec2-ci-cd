@@ -9,7 +9,7 @@ PORT = int(os.getenv("APP_PORT", 4000))
 @app.route("/")
 def home():
     if ENVIRONMENT == "live":
-        return "Welcome to Live"
+        return "Welcome to Live - Auto Deployed"
     return "Welcome to Dev"
 
 if __name__ == "__main__":
