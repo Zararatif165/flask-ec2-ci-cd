@@ -35,9 +35,11 @@ jobs:
             git pull origin ${{ github.ref_name }}
             if [ "${{ github.ref_name }}" == "dev" ]; then
               pkill -f "app.py" || true
-              APP_ENV=dev APP_PORT=4000 nohup python3 app.py &
+              APP_ENV=dev APP_PORT=4000 nohup python3 app.py > dev.log 2>&1 &
+              disown
             fi
             if [ "${{ github.ref_name }}" == "main" ]; then
               pkill -f "app.py" || true
-              APP_ENV=live APP_PORT=5000 nohup python3 app.py &
+              APP_ENV=live APP_PORT=5000 nohup python3 app.py > live.log 2>&1 &
+              disown
             fi
