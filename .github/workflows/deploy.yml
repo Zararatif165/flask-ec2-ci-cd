@@ -22,27 +22,29 @@ jobs:
           key: ${{ secrets.EC2_KEY1 }}
           port: 22
           command_timeout: 30m
+          script_stop: true  # This ensures the job stops if a command fails
           script: |
             cd ~/flask-app
             
-            # Fetch and reset to match the branch exactly
+            # Update code
             git fetch origin
             git reset --hard origin/${{ github.ref_name }}
 
-            # Kill existing app instance to prevent port conflicts
+            # Kill old app instance
             pkill -f "app.py" || true
 
-            # Launch based on branch
+            # Start App based on branch
             if [ "${{ github.ref_name }}" == "dev" ]; then
               APP_ENV=dev APP_PORT=4000 nohup /usr/bin/python3 app.py > dev.log 2>&1 &
-              sleep 2
-              disown
             fi
 
             if [ "${{ github.ref_name }}" == "main" ]; then
               APP_ENV=live APP_PORT=5000 nohup /usr/bin/python3 app.py > live.log 2>&1 &
-              sleep 2
-              disown
             fi
             
+            # Wait a moment for the process to bind to the port
+            sleep 3
             echo "Deployment successful for ${{ github.ref_name }}"
+            
+            # Force a clean exit to prevent Signal 143/Timeout
+            exit 0
