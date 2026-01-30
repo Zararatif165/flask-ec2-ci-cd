@@ -1,4 +1,4 @@
-name: Auto Deploy Flask
+name: CI/CD Pipeline
 
 on:
   push:
@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -18,8 +22,10 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY1 }}
           port: 22
+
           script: |
             cd ~/flask-app
+
             git pull origin ${{ github.ref_name }}
 
             pkill -f app.py || true
